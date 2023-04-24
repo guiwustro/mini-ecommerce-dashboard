@@ -1,7 +1,7 @@
 <br />
 <div align="center">
 
-<h1 align="center">Teste Coopers</h1>
+<h1 align="center">Mini e-commerce- dashboard</h1>
 
   <a href="https://mini-ecommerce-dashboard.vercel.app//">
 Link do projeto</a>
