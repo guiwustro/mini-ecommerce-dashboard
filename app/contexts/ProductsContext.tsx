@@ -35,7 +35,7 @@ interface IProductsResponse {
 export interface IProductForm {
 	name: string;
 	image?: string;
-	price: number;
+	price: number | string;
 	amount: number;
 }
 
@@ -164,7 +164,7 @@ export const ProductProvider = ({ children }: IProductProvider) => {
 						toast.dismiss();
 						toast.success("Produto criado com sucesso!");
 					})
-					.then(() =>
+					.catch(() =>
 						toast.error("Não foi possível adicionar essa foto ao produto.")
 					);
 			}

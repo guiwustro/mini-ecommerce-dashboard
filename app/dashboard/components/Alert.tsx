@@ -8,7 +8,7 @@ interface IAlert {
 	_id: string;
 	name: string;
 }
-const Alert = ({ _id, closeAlert, isOpen, name }: IAlert) => {
+const Alert = ({ _id, closeAlert, name }: IAlert) => {
 	const { deleteProduct } = useProductContext();
 	const ref = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {

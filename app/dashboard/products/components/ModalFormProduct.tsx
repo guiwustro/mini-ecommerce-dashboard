@@ -9,7 +9,7 @@ import {
 	useProductContext,
 } from "@/app/contexts/ProductsContext";
 import Modal from "@/app/components/Modal";
-import { FormGroup } from "@/app/components/inputs/InputGlobal";
+import { FormGroup, maskReais } from "@/app/components/inputs/InputGlobal";
 import IntlCurrencyInput from "react-intl-currency-input";
 
 export const CreateProductModal = () => {
@@ -21,26 +21,10 @@ export const CreateProductModal = () => {
 	} = useProductContext();
 	const formSchema = yup.object().shape({
 		name: yup.string().required("Campo obrigatório"),
-		price: yup.number().required("Campo obrigatório"),
+		price: yup.mixed().required("Campo obrigatório"),
 		amount: yup.number().required("Campo obrigatório."),
 	});
-	const currencyConfig = {
-		locale: "pt-BR",
-		formats: {
-			number: {
-				BRL: {
-					style: "currency",
-					currency: "BRL",
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				},
-			},
-		},
-	};
-	const handleChange = (event: any, value: any) => {
-		event.preventDefault();
-		setValue("price", value);
-	};
+
 	const ref = useRef<HTMLHeadingElement>(null);
 	useEffect(() => {
 		function handleOutClick(event: any) {
@@ -72,12 +56,13 @@ export const CreateProductModal = () => {
 	};
 
 	const onSubmitFunction = (data: IProductForm) => {
+		const newData = { ...data, price: unMaskReais(data.price) };
 		if (modalConfigProduct.modalType === "update") {
-			updateProduct(data, modalConfigProduct.data._id);
+			updateProduct(newData, modalConfigProduct.data._id);
 
 			return;
 		}
-		createProduct(data, selectedFile);
+		createProduct(newData, selectedFile);
 	};
 
 	useEffect(() => {
@@ -85,10 +70,15 @@ export const CreateProductModal = () => {
 			const infoProduct = modalConfigProduct.data;
 			setValue("name", infoProduct.name);
 			setValue("amount", infoProduct.amount);
-			setValue("price", infoProduct.price);
+			console.log(infoProduct.price.toString());
+			setValue("price", maskReais((infoProduct.price * 100).toString()));
 		}
 	}, []);
-
+	const unMaskReais = (value: string | number): number => {
+		return typeof value === "number"
+			? value
+			: Number(value.replace(/\D/g, "")) / 100;
+	};
 	return (
 		<Modal className="items-center justify-center">
 			<div
@@ -120,26 +110,45 @@ export const CreateProductModal = () => {
 							type="number"
 							errors={errors?.amount?.message ? "Campo obrigatório" : ""}
 						/>
-						<label
+						<FormGroup
+							label="Preço por unidade (R$)"
+							register={register}
+							registerName="price"
+							type="text"
+							price
+							errors={errors?.price?.message ? "Campo obrigatório" : ""}
+						/>
+						{/* <label
 							className={`font-medium ${
 								errors?.price?.message ? "text-red-500" : "text-gray-0"
 							}`}
 							htmlFor="price"
 						>
 							Preço por unidade
-						</label>
-						<IntlCurrencyInput
+						</label> */}
+						{/* <IntlCurrencyInput
 							currency="BRL"
-							config={currencyConfig as any}
+							config={{
+								locale: "pt-BR",
+								formats: {
+									number: {
+										BRL: {
+											style: "currency",
+											currency: "BRL",
+										},
+									},
+								},
+							}}
 							onChange={handleChange}
 							max={100000}
 							value={getValues("price")}
-							// @ts-ignore
+							//@ts-ignore
 							className={`outline-gray-600 w-full rounded-md px-4 h-10 bg-gray-50 border-2 ${
 								errors?.price?.message ? "border-red-500" : "border-gray-0"
 							} `}
 							defaultValue={0}
-						/>
+						/> */}
+
 						<input
 							className="pt-4 pb-2"
 							type="file"
