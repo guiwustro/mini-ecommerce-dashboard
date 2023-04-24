@@ -1,15 +1,13 @@
 "use client";
 import {
 	createContext,
-	Dispatch,
 	ReactNode,
-	SetStateAction,
 	useContext,
 	useEffect,
 	useState,
 } from "react";
-import { api } from "../services/api";
 import { toast } from "react-hot-toast";
+import { api } from "../services/api";
 
 interface IProductProvider {
 	children: ReactNode;
@@ -47,7 +45,7 @@ interface IProductUpdateForm extends IProductForm {
 
 interface IProductContext {
 	products?: IProduct[];
-	createProduct: (data: IProductForm) => void;
+	createProduct: (data: IProductForm, file: File | undefined) => void;
 	updateProduct: (data: Partial<IProductUpdateForm>, _id: string) => void;
 	deleteProduct: (_id: string) => void;
 	openModalProductCreate: () => void;
@@ -141,7 +139,10 @@ export const ProductProvider = ({ children }: IProductProvider) => {
 		}
 	};
 
-	const createProduct = async (product: IProductForm) => {
+	const createProduct = async (
+		product: IProductForm,
+		file: File | undefined
+	) => {
 		toast.loading("Loading infos... ");
 		try {
 			const { data }: IProductCreate = await api.post("/products", product);
@@ -149,8 +150,24 @@ export const ProductProvider = ({ children }: IProductProvider) => {
 				if (!old) return [data];
 				return [...old, data];
 			});
-			closeModalProduct();
-			toast.dismiss();
+			if (file) {
+				const formData = new FormData();
+				formData.append("files", file);
+				await api
+					.post(`/products/${data._id}/images`, formData, {
+						headers: {
+							"Content-Type": "multipart/form-data",
+						},
+					})
+					.then(() => {
+						closeModalProduct();
+						toast.dismiss();
+						toast.success("Produto criado com sucesso!");
+					})
+					.then(() =>
+						toast.error("Não foi possível adicionar essa foto ao produto.")
+					);
+			}
 		} catch (error) {
 			console.log(error);
 			toast.dismiss();

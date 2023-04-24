@@ -3,7 +3,13 @@ import { Toaster } from "react-hot-toast";
 import { ProductProvider } from "../contexts/ProductsContext";
 import AsideBar from "./components/AsideBar";
 import Header from "./components/Header";
+import { Poppins } from "next/font/google";
 
+const poppins = Poppins({
+	weight: ["400", "600", "700"],
+	subsets: ["latin"],
+	variable: "--font-poppins",
+});
 export default function RootLayout({
 	children,
 }: {
@@ -11,7 +17,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body>
+			<body className={poppins.className}>
 				<ProductProvider>
 					<Header />
 					<AsideBar />

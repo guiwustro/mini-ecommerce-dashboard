@@ -65,6 +65,11 @@ export const CreateProductModal = () => {
 		getValues,
 		formState: { errors },
 	} = useForm<IProductForm>({ resolver: yupResolver(formSchema) });
+	const [selectedFile, setSelectedFile] = useState(undefined);
+
+	const handleFileInput = (e: any) => {
+		setSelectedFile(e.target.files[0]);
+	};
 
 	const onSubmitFunction = (data: IProductForm) => {
 		if (modalConfigProduct.modalType === "update") {
@@ -72,7 +77,7 @@ export const CreateProductModal = () => {
 
 			return;
 		}
-		createProduct(data);
+		createProduct(data, selectedFile);
 	};
 
 	useEffect(() => {
@@ -115,7 +120,6 @@ export const CreateProductModal = () => {
 							type="number"
 							errors={errors?.amount?.message ? "Campo obrigatório" : ""}
 						/>
-
 						<label
 							className={`font-medium ${
 								errors?.price?.message ? "text-red-500" : "text-gray-0"
@@ -135,6 +139,11 @@ export const CreateProductModal = () => {
 								errors?.price?.message ? "border-red-500" : "border-gray-0"
 							} `}
 							defaultValue={0}
+						/>
+						<input
+							className="pt-4 pb-2"
+							type="file"
+							onChange={handleFileInput}
 						/>
 					</div>
 					<button

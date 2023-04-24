@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useUserContext } from "@/app/contexts/UserContext";
 
 const Header = () => {
